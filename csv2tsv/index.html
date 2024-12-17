@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simple browser-based CSV to TSV converter. Upload your CSV file and convert it to tab-separated values (TSV) format. All processing happens locally in your browser for privacy.">
+    <meta name="keywords" content="CSV to TSV, CSV converter, TSV converter, file converter, data conversion">
+    <meta name="author" content="George Nance">
+    <meta property="og:title" content="CSV to TSV Converter - Browser-Based Tool">
+    <meta property="og:description" content="Convert your CSV files to TSV format with this browser-based tool. Secure local conversion with no server uploads.">
+    <meta property="og:type" content="website">
     <title>CSV to TSV Converter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
@@ -51,6 +57,20 @@
         button:hover:not(:disabled) {
             background: #0052a3;
         }
+        footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+        }
+        footer a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +81,11 @@
     </div>
     <button id="downloadBtn" disabled>Download TSV</button>
     <div id="preview"></div>
+
+    <footer>
+        <p>Created by <a href="/">George Nance</a></p>
+        <p>A browser-based tool to convert CSV files to TSV format. All processing happens locally in your browser for privacy.</p>
+    </footer>
 
     <script>
         const dropZone = document.getElementById('dropZone');
