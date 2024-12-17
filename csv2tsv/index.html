@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to TSV Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            line-height: 1.5;
+        }
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            background: #f8f8f8;
+        }
+        .drop-zone.dragover {
+            border-color: #000;
+            background: #eee;
+        }
+        #preview {
+            margin-top: 1rem;
+            white-space: pre-wrap;
+            font-family: monospace;
+            background: #f8f8f8;
+            padding: 1rem;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow: auto;
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background: #0052a3;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSV to TSV Converter</h1>
+    <div class="drop-zone" id="dropZone">
+        <p>Drag and drop a CSV file here or click to select</p>
+        <input type="file" id="fileInput" accept=".csv" style="display: none">
+    </div>
+    <button id="downloadBtn" disabled>Download TSV</button>
+    <div id="preview"></div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const preview = document.getElementById('preview');
+        let convertedData = null;
+        let originalFilename = '';
+
+        // Handle drag and drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('dragover');
+        }
+
+        // Handle file selection
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFiles);
+        dropZone.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles({ target: { files } });
+        });
+
+        function handleFiles(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Store the original filename
+            originalFilename = file.name;
+
+            Papa.parse(file, {
+                complete: function(results) {
+                    // Convert to TSV
+                    convertedData = results.data
+                        .map(row => row.map(cell => 
+                            // Escape tabs and newlines in cells
+                            cell.replace(/\t/g, '\\t').replace(/\n/g, '\\n')
+                        ).join('\t'))
+                        .join('\n');
+
+                    // Show preview
+                    preview.textContent = convertedData.slice(0, 1000) + 
+                        (convertedData.length > 1000 ? '...' : '');
+                    downloadBtn.disabled = false;
+                },
+                error: function(error) {
+                    preview.textContent = 'Error: ' + error.message;
+                    downloadBtn.disabled = true;
+                }
+            });
+        }
+
+        // Handle download
+        downloadBtn.addEventListener('click', () => {
+            if (!convertedData) return;
+
+            const blob = new Blob([convertedData], { type: 'text/tab-separated-values' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            // Use the original filename but replace .csv with .tsv
+            const newFilename = originalFilename.toLowerCase().endsWith('.csv') 
+                ? originalFilename.slice(0, -4) + '.tsv' 
+                : originalFilename + '.tsv';
+            a.download = newFilename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        });
+    </script>
+</body>
+</html>
