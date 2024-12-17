@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Simple browser-based CSV to TSV converter. Upload your CSV file and convert it to tab-separated values (TSV) format. All processing happens locally in your browser for privacy.">
+    <meta name="description"
+          content="Simple browser-based CSV to TSV converter. Upload your CSV file and convert it to tab-separated values (TSV) format. All processing happens locally in your browser for privacy.">
     <meta name="keywords" content="CSV to TSV, CSV converter, TSV converter, file converter, data conversion">
     <meta name="author" content="George Nance">
     <meta property="og:title" content="CSV to TSV Converter - Browser-Based Tool">
-    <meta property="og:description" content="Convert your CSV files to TSV format with this browser-based tool. Secure local conversion with no server uploads.">
+    <meta property="og:description"
+          content="Convert your CSV files to TSV format with this browser-based tool. Secure local conversion with no server uploads.">
     <meta property="og:type" content="website">
     <title>CSV to TSV Converter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -19,6 +22,7 @@
             padding: 0 1rem;
             line-height: 1.5;
         }
+
         .drop-zone {
             border: 2px dashed #ccc;
             border-radius: 4px;
@@ -27,10 +31,12 @@
             margin: 1rem 0;
             background: #f8f8f8;
         }
+
         .drop-zone.dragover {
             border-color: #000;
             background: #eee;
         }
+
         #preview {
             margin-top: 1rem;
             white-space: pre-wrap;
@@ -41,6 +47,7 @@
             max-height: 300px;
             overflow: auto;
         }
+
         button {
             background: #0066cc;
             color: white;
@@ -50,13 +57,16 @@
             cursor: pointer;
             font-size: 1rem;
         }
+
         button:disabled {
             background: #ccc;
             cursor: not-allowed;
         }
+
         button:hover:not(:disabled) {
             background: #0052a3;
         }
+
         footer {
             margin-top: 2rem;
             padding-top: 1rem;
@@ -64,17 +74,22 @@
             text-align: center;
             color: #666;
         }
+
         footer a {
             color: #0066cc;
             text-decoration: none;
         }
+
         footer a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
     <h1>CSV to TSV Converter</h1>
+    <p>A browser-based tool to convert CSV files to TSV format. All processing happens locally in your browser for
+        privacy.</p>
     <div class="drop-zone" id="dropZone">
         <p>Drag and drop a CSV file here or click to select</p>
         <input type="file" id="fileInput" accept=".csv" style="display: none">
@@ -84,7 +99,7 @@
 
     <footer>
         <p>Created by <a href="/">George Nance</a></p>
-        <p>A browser-based tool to convert CSV files to TSV format. All processing happens locally in your browser for privacy.</p>
+
     </footer>
 
     <script>
@@ -133,26 +148,26 @@
         function handleFiles(e) {
             const file = e.target.files[0];
             if (!file) return;
-            
+
             // Store the original filename
             originalFilename = file.name;
 
             Papa.parse(file, {
-                complete: function(results) {
+                complete: function (results) {
                     // Convert to TSV
                     convertedData = results.data
-                        .map(row => row.map(cell => 
+                        .map(row => row.map(cell =>
                             // Escape tabs and newlines in cells
                             cell.replace(/\t/g, '\\t').replace(/\n/g, '\\n')
                         ).join('\t'))
                         .join('\n');
 
                     // Show preview
-                    preview.textContent = convertedData.slice(0, 1000) + 
+                    preview.textContent = convertedData.slice(0, 1000) +
                         (convertedData.length > 1000 ? '...' : '');
                     downloadBtn.disabled = false;
                 },
-                error: function(error) {
+                error: function (error) {
                     preview.textContent = 'Error: ' + error.message;
                     downloadBtn.disabled = true;
                 }
@@ -168,8 +183,8 @@
             const a = document.createElement('a');
             a.href = url;
             // Use the original filename but replace .csv with .tsv
-            const newFilename = originalFilename.toLowerCase().endsWith('.csv') 
-                ? originalFilename.slice(0, -4) + '.tsv' 
+            const newFilename = originalFilename.toLowerCase().endsWith('.csv')
+                ? originalFilename.slice(0, -4) + '.tsv'
                 : originalFilename + '.tsv';
             a.download = newFilename;
             document.body.appendChild(a);
@@ -179,4 +194,5 @@
         });
     </script>
 </body>
+
 </html>
