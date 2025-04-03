@@ -11,6 +11,27 @@
     <!-- CodeMirror Hint CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/hint/show-hint.min.css">
     <style>
+	    /* Custom Scrollbar Styling */
+	* {
+	    /* Firefox */
+	    scrollbar-width: thin;
+	}
+	
+	/* Webkit (Chrome, Safari, Edge) */
+	::-webkit-scrollbar {
+	    width: 8px;
+	    height: 8px;
+	}
+	
+	::-webkit-scrollbar-track {
+	    border-radius: 4px;
+	}
+	
+	::-webkit-scrollbar-thumb {
+	    border-radius: 4px;
+	    transition: background 0.2s ease;
+	}
+	    
         body {
             font-family: Arial, sans-serif;
             display: flex;
